@@ -2,45 +2,49 @@
 
 import socket
 import sys
-#Create a TCP/IP socket
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-HOST = socket.gethostname() #Get local machine name
+from datetime import time
+HOST = socket.gethostname() #get local machine name
 PORT = 8008
 server_address = (HOST,PORT)
+BUFFER_SIZE = 1024
 
-print '\n200 NBserver version Beta ready '
+#create a TCP/IP socket
 
-#Bind socket to local host and port
+sock = socket.socket()
+
 try:
-	s.bind(server_address)
-except socket.error as msg:
-	print 'Bind failed. Error code: '+ str(msg[0])+ ' Message '+ msg[1]
-	sys.exit()
-print 'Socket bind complete'
+    sock.bind(server_address)
+except socket.error as message:
+    print 'Bind failed. Error code: '+ str(message[0])+ ' Message ' + message[1]
+    sys.exit()
+
+#Initial connection
+print '200 SRP version 1.0 ready'
 
 #start listening on socket
-s.listen(1)
-print 'Socket now listening'
+sock.listen(1)
+print 'Start listening'
 
-#now keep talking with the client
+c_connection, c_address = sock.accept()
+print 'Connecting address:',c_address
+           
 while True:
-	#wait to accept a connection - bloacking call
-	print >>sys.stderr,'waiting for a connection'
-	connection, client_address = s.accept()
-	try:
-		print >>sys.stderr,'connecting from', client_address
-	#Recieve the data in small chunks and retransmit it
-		while True:
-			data = connection.recv(16)
-			print >>sys.stderr,'"received "%s"' %data
-			if data:
-				print >>sys.stderr,'sending data back to the client'
-				connection.sendall(data)
-			else:
-				print >>sys.stderr,'no more data from',client_address
-				break
-	finally:
-		connection.close()
+    data = c_connection.recv(BUFFER_SIZE)
+    if not data: break
+    print "received data: ", data
+    #c_connection.send() echo
+    if "HELO" in data:
+        c_connection.send("210 hello "+HOST+" Pleased to meet you.")
+        break
+    else:
+        c_connection.send("510 Sorry I can not service your request at this time.")
+        sys.exit()
+    if "Time" in data:
+        c_connection.send("testing")
+
+    else:
+        sys.exit()
+        
+           
+
 

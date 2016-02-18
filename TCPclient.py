@@ -3,28 +3,35 @@
 import socket
 import sys
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	#create a socket object
+
+import socket
+import sys
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	#create a socket object
 
 HOST = socket.gethostname()
 PORT = 8008
 server_address = (HOST,PORT)
-print >>sys.stderr,'connection to %s port %s' % server_address
-s.connect(server_address)
+BUFFER_SIZE = 1024
+
+sock.connect(server_address)
+
 try:
+        
 	#send data
-	message = ''
-	print >>sys.stderr, 'sending "%s"' % message
-	s.sendall(message)
+	message = 'HELO ' + HOST
+	print message
+	sock.sendall(message)
+	data = sock.recv(BUFFER_SIZE)
+	print data
+	time = "Time"
+	sock.sendall(time)
+	data = sock.recv(BUFFER_SIZE)
+	print data
 	
 	#look for the response
-	amount_received = 0
-	amount_expected = len(message)
 	
-	while amount_received < amount_expected:
-		data = s.recv(16)
-		amount_received +=len(data)
-		print >>sys.stderr, 'received "%s"' % data
+  
 finally:
 	print >>sys.stderr, 'closing socket'
-	s.close()
-
+	sock.close()
