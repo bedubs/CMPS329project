@@ -17,8 +17,9 @@ HOST, PORT = '', 8008
 s.connect((HOST, PORT))
 
 # Use list of requests to test the Server
-request_test = ['HELO','HELO name','REQTIME','REQDATE','ECHO','ECHO You can say that again','REQIP','BYE']
-
+request_test = ['HELO', 'HELO name', 'REQTIME', 'REQDATE', 'ECHO', 'ECHO You can say that again', 'KILL this program', 'REQIP' ,'BYE']
+#  'ECHO You can say that again',
+#  'HELO name'
 
 try:
     data = s.recv(1024)
@@ -28,7 +29,7 @@ try:
         print(data.decode('utf-8'))
         print('\n')
 
-        while(True):
+        while True:
             for request in request_test:
                 s.send(request.encode(encoding='utf-8'))
 
