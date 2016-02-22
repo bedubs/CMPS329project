@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# server_dict.py
+# server.py
 # Author: William Williamson
 # Author: Neil Hoang
 # Date  : 17 FEB 2016
@@ -55,7 +55,7 @@ def handle_req(data):
     client_echo = 'Client: ' + str_data
     conn.send(client_echo.encode(encoding='utf-8'))  # Display client request back to the client
     request = str_data.split()  # Split request to check for arguments sent with command and store in list (request array)
-    
+
     if request[0] in req.keys():
         if request[0] == 'REQIP':
             response = req[request[0]][0](request, req[request[0]]) % ''.join(conn.getsockname()[0])
