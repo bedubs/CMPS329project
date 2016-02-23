@@ -56,16 +56,21 @@ def handle_req(data):
     conn.send(client_echo.encode(encoding='utf-8'))  # Display client request back to the client
     request = str_data.split()  # Split request to check for arguments sent with command and store in list (request array)
 
-    if request[0] in req.keys():
-        if request[0] == 'REQIP':
-            response = req[request[0]][0](request, req[request[0]]) % ''.join(conn.getsockname()[0])
+    # Put a try/except here to handle index error for blank data
+    try:
+        if request[0] in req.keys():
+            if request[0] == 'REQIP':
+                response = req[request[0]][0](request, req[request[0]]) % ''.join(conn.getsockname()[0])
+            else:
+                response = req[request[0]][0](request, req[request[0]])
         else:
-            response = req[request[0]][0](request, req[request[0]])
-    else:
-        # If request is not in the dictionary, put this in response
-        response = 'Server: 500  \"' + request[0] + '\" not a recognized command.\n'
+            # If request is not in the dictionary, put this in response
+            response = 'Server: 500  \"' + request[0] + '\" not a recognized command.\n'
 
-    conn.send(response.encode(encoding='utf-8'))  # send it
+        conn.send(response.encode(encoding='utf-8'))  # send it
+    except Exception:
+        conn.send('Server: 500  Please check your input and try again.\n')
+        pass
 
 
 # This function receives the Client request and sends it to handle_req()
